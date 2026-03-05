@@ -1,6 +1,6 @@
-# MiniBank (Spring Core)
+# MiniBank (Spring Core, Hibernate)
 
-Консольное учебное банковское приложение на Java + Spring Core.
+Консольное учебное банковское приложение на Java + Spring Core + Hibernate.
 
 ## Что умеет
 - создавать пользователей;
