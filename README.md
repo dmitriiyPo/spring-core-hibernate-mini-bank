@@ -1,0 +1,1 @@
+# spring-core-hibernate-mini-bank
