@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MiniBank (Spring Core)
 
 Консольное учебное банковское приложение на Java + Spring Core.
