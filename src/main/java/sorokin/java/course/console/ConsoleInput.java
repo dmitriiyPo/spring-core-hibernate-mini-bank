@@ -46,7 +46,7 @@ public class ConsoleInput {
         }
     }
 
-    public int readPositiveInt(String prompt, String fieldName) {
+    public Long readPositiveLong(String prompt, String fieldName) {
         while (true) {
             System.out.println(prompt);
             String value = scanner.nextLine().trim();
@@ -55,7 +55,7 @@ public class ConsoleInput {
                 continue;
             }
             try {
-                int parsed = Integer.parseInt(value);
+                long parsed = Long.parseLong(value);
                 if (parsed <= 0) {
                     System.out.println("Error: " + fieldName + " must be > 0");
                     continue;

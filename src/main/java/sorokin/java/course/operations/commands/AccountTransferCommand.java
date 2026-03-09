@@ -19,12 +19,13 @@ public class AccountTransferCommand implements OperationCommand {
 
     @Override
     public void execute() {
-        int fromAccountId = consoleInput.readPositiveInt("Enter source account id:", "source account id");
-        int toAccountId = consoleInput.readPositiveInt("Enter target account id:", "target account id");
-        if (fromAccountId == toAccountId) {
+        Long fromAccountId = consoleInput.readPositiveLong("Enter source account id:", "source account id");
+        Long toAccountId = consoleInput.readPositiveLong("Enter target account id:", "target account id");
+        if (fromAccountId.equals(toAccountId)) {
             throw new IllegalArgumentException("source and target account id must be different");
         }
-        int amount = consoleInput.readPositiveInt("Enter amount:", "amount");
+        Long amountLong = consoleInput.readPositiveLong("Enter amount:", "amount");
+        int amount = amountLong.intValue();
         accountService.transfer(fromAccountId, toAccountId, amount);
         System.out.println("Transfer completed from account " + fromAccountId + " to account " + toAccountId + ".");
     }

@@ -8,5 +8,6 @@ public enum ConsoleOperationType {
     ACCOUNT_DEPOSIT,
     ACCOUNT_TRANSFER,
     ACCOUNT_WITHDRAW,
+    USER_DELETE,
     EXIT
 }
