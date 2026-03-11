@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import sorokin.java.course.tools.TransactionHelper;
 import sorokin.java.course.user.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -42,7 +43,7 @@ public class AccountService {
     }
 
 
-    public void withdraw(Long fromAccountId, Integer amount) {
+    public void withdraw(Long fromAccountId, BigDecimal amount) {
         validatePositiveId(fromAccountId, "account id");
         validatePositiveAmount(amount);
 
@@ -53,19 +54,22 @@ public class AccountService {
                 throw new IllegalArgumentException("No such account: id=%s".formatted(fromAccountId));
             }
 
-            if (amount > account.getMoneyAmount()) {
+            if (amount.compareTo(account.getMoneyAmount()) > 0) {
                 throw new IllegalArgumentException(
                     "insufficient funds on account id=%s, moneyAmount=%s, attempted withdraw=%s"
                             .formatted(account.getId(), account.getMoneyAmount(), amount)
                 );
             }
 
-            account.setMoneyAmount(account.getMoneyAmount() - amount);
+            BigDecimal newBalance = account.getMoneyAmount().subtract(amount);
+            account.setMoneyAmount(newBalance);
+            //account.setMoneyAmount(account.getMoneyAmount().subtract(amount));
+
         });
     }
 
 
-    public void deposit(Long toAccountId, Integer amount) {
+    public void deposit(Long toAccountId, BigDecimal amount) {
         validatePositiveId(toAccountId, "account id");
         validatePositiveAmount(amount);
 
@@ -76,7 +80,9 @@ public class AccountService {
                throw new IllegalArgumentException("No such account: id=%s".formatted(toAccountId));
            }
 
-           account.setMoneyAmount(account.getMoneyAmount() + amount);
+            BigDecimal newBalance = account.getMoneyAmount().add(amount);
+            account.setMoneyAmount(newBalance);
+            //account.setMoneyAmount(account.getMoneyAmount().add(amount));
         });
     }
 
@@ -113,8 +119,8 @@ public class AccountService {
                         .orElseThrow();
 
 
-            var newAmount = accountToTransferMoney.getMoneyAmount() + accountToClose.getMoneyAmount();
-            accountToTransferMoney.setMoneyAmount(newAmount);
+            accountToTransferMoney.setMoneyAmount(accountToTransferMoney.getMoneyAmount()
+                                                .add(accountToClose.getMoneyAmount()));
 
             session.remove(accountToClose);
 
@@ -123,7 +129,7 @@ public class AccountService {
     }
 
 
-    public void transfer(Long fromAccountId, Long toAccountId, Integer amount) {
+    public void transfer(Long fromAccountId, Long toAccountId, BigDecimal amount) {
         validatePositiveId(fromAccountId, "source account id");
         validatePositiveId(toAccountId, "target account id");
         validatePositiveAmount(amount);
@@ -144,20 +150,20 @@ public class AccountService {
                 throw new IllegalArgumentException("No such account: id=%s".formatted(toAccountId));
             }
 
-            if (amount > fromAccount.getMoneyAmount()) {
+            if (amount.compareTo(fromAccount.getMoneyAmount()) > 0 ) {
                 throw new IllegalArgumentException(
                         "insufficient funds on account id=%s, moneyAmount=%s, attempted transfer=%s"
                                 .formatted(fromAccount.getId(), fromAccount.getMoneyAmount(), amount)
                 );
             }
 
-            fromAccount.setMoneyAmount(fromAccount.getMoneyAmount() - amount);
+            fromAccount.setMoneyAmount(fromAccount.getMoneyAmount().subtract(amount));
 
-            int amountToTransfer = toAccount.getUser().getId().equals(fromAccount.getUser().getId())
+            BigDecimal amountToTransfer = toAccount.getUser().getId().equals(fromAccount.getUser().getId())
                     ? amount
-                    : (int) Math.round(amount * (1 - accountProperties.getTransferCommission()));
+                    : amount.multiply(BigDecimal.ONE.subtract(accountProperties.getTransferCommission()));
 
-            toAccount.setMoneyAmount(toAccount.getMoneyAmount() + amountToTransfer);
+            toAccount.setMoneyAmount(toAccount.getMoneyAmount().add(amountToTransfer));
 
         });
     }
@@ -169,8 +175,8 @@ public class AccountService {
         }
     }
 
-    private void validatePositiveAmount(Integer amount) {
-        if (amount == null || amount <= 0) {
+    private void validatePositiveAmount(BigDecimal amount) {
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("amount must be > 0");
         }
     }

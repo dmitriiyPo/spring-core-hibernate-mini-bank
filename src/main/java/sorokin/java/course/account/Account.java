@@ -3,6 +3,8 @@ package sorokin.java.course.account;
 import jakarta.persistence.*;
 import sorokin.java.course.user.User;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "accounts")
 public class Account {
@@ -12,7 +14,7 @@ public class Account {
     private Long id;
 
     @Column(name = "money_amount", nullable = false)
-    private int moneyAmount;
+    private BigDecimal moneyAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -21,7 +23,7 @@ public class Account {
 
     public Account() {}
 
-    public Account(int moneyAmount) {
+    public Account(BigDecimal moneyAmount) {
         this.moneyAmount = moneyAmount;
     }
 
@@ -41,12 +43,12 @@ public class Account {
         this.user = user;
     }
 
-    public int getMoneyAmount() {
+    public BigDecimal getMoneyAmount() {
         return moneyAmount;
     }
 
-    public void setMoneyAmount(int moneyAmount) {
-        if (moneyAmount < 0) {
+    public void setMoneyAmount(BigDecimal moneyAmount) {
+        if (moneyAmount.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Attempted to set moneyAmount less than 0");
         }
         this.moneyAmount = moneyAmount;

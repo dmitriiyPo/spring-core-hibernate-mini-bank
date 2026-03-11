@@ -64,7 +64,7 @@ public class TransactionHelper {
         boolean owner = transaction.getStatus() == TransactionStatus.NOT_ACTIVE;
 
         if (owner) {
-            transaction = session.beginTransaction();
+            transaction.begin();
         }
 
         try {

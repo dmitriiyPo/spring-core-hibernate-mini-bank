@@ -31,7 +31,16 @@ public class UserService {
             User user = new User(normalizedLogin, new ArrayList<>());
 
             Session session = sessionFactory.getCurrentSession();
-            session.persist(user);
+
+            User userWithLogin = session.createQuery("from User where login = :login", User.class)
+                    .setParameter("login", normalizedLogin)
+                    .getSingleResultOrNull();
+
+            if (userWithLogin == null) {
+                session.persist(user);
+            } else {
+                throw new IllegalArgumentException("Login already exists: " + normalizedLogin + "\n");
+            }
 
             var account = accountService.createAccount(user);
 

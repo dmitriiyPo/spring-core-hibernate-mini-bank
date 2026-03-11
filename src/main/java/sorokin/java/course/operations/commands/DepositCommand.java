@@ -6,6 +6,8 @@ import sorokin.java.course.console.ConsoleInput;
 import sorokin.java.course.operations.ConsoleOperationType;
 import sorokin.java.course.operations.OperationCommand;
 
+import java.math.BigDecimal;
+
 @Component
 public class DepositCommand implements OperationCommand {
 
@@ -20,9 +22,7 @@ public class DepositCommand implements OperationCommand {
     @Override
     public void execute() {
         Long accountId = consoleInput.readPositiveLong("Enter account id:", "account id");
-        Long amountLong = consoleInput.readPositiveLong("Enter amount:", "amount");
-
-        int amount = amountLong.intValue();
+        BigDecimal amount = consoleInput.readPositiveBigDecimal("Enter amount:", "amount");
 
         accountService.deposit(accountId, amount);
         System.out.println("Deposited " + amount + " to account " + accountId + ".");

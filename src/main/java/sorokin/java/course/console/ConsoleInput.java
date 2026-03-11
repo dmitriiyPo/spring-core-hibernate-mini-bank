@@ -3,6 +3,7 @@ package sorokin.java.course.console;
 import org.springframework.stereotype.Component;
 import sorokin.java.course.operations.ConsoleOperationType;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Scanner;
@@ -66,6 +67,31 @@ public class ConsoleInput {
             }
         }
     }
+
+
+    public BigDecimal readPositiveBigDecimal(String prompt, String fieldName) {
+        while (true) {
+            System.out.println(prompt);
+            String value = scanner.nextLine().trim();
+            if (value.isBlank()) {
+                System.out.println("Error: " + fieldName + " must not be blank");
+                continue;
+            }
+            try {
+                BigDecimal parsed = new BigDecimal(value);
+
+                if (parsed.compareTo(BigDecimal.ZERO) <= 0) {
+                    System.out.println("Error: " + fieldName + " must be > 0");
+                    continue;
+                }
+
+                return parsed;
+            } catch (NumberFormatException e) {
+                System.out.println("Error: " + fieldName + " must be a number");
+            }
+        }
+    }
+
 
     public void printAvailableCommands() {
         String availableCommands = Arrays.stream(ConsoleOperationType.values())
